@@ -1,25 +1,26 @@
 import pygame
 
-def draw(enigma, path, screen, width, height, margins, gap, font):
 
-    # width and height of components
-    w = (width - margins["left"] - margins["right"] - 5 * gap) / 6
+def draw(enigma, path, screen, width, height, margins, gap, font):
+    # coordinate calcs
+    x = margins["left"]
+    y = margins["top"]
+    w = (width-margins["left"]-margins["right"]-5*gap)/6
     h = height - margins["top"] - margins["bottom"]
 
     # path coordinates
-    y = [margins["top"] + (signal + 1) * h / 27 for signal in path]
-    x = [width - margins["right"] - w / 2]  # Keyboard
+    q = [margins["top"] + (signal+1)*h/27 for signal in path]
+    p = [width-margins["right"]-w/2]
+    for i in [4, 3, 2, 1, 0]:
+        p.append(margins["left"]+(i)*(gap+w)+w*3/4)
+        p.append(margins["left"]+(i)*(gap+w)+w*1/4)
+    p.append(margins["left"]+w*3/4)
+    for i in [1, 2, 3, 4]:
+        p.append(margins["left"]+(i)*(gap+w)+w*1/4)
+        p.append(margins["left"]+(i)*(gap+w)+w*3/4)
+    p.append(width-margins["right"]-w/2)
 
-    for i in [4, 3, 2, 1, 0]:  # forward pass
-        x.append(margins["left"] + i * (w + gap) * w * 3 / 4)
-        x.append(margins["left"] + i * (w + gap) * w * 1 / 4)
-    x.append(margins["left"] + w * 3 / 4)  # reflector
-    for i in [1, 2, 3, 4]:  # backward pass
-        x.append(margins["left"] + i * (w + gap) * w * 1 / 4)
-        x.append(margins["left"] + i * (w + gap) * w * 3 / 4)
-    x.append(width - margins["right"] - w / 2)  # lampboard
-
-    # draw the path
+    # draw path
     if len(path) > 0:
         for i in range(1, 21):
             if i < 10:
@@ -28,14 +29,9 @@ def draw(enigma, path, screen, width, height, margins, gap, font):
                 color = "#f9c74f"
             else:
                 color = "#e63946"
-            start = (x[i - 1], y[i - 1])
-            end = (x[i], y[i])
-            pygame.draw.line(screen, color, start, end, width=5)
-
-    # base coordinates
-    x = margins["left"]
-    y = margins["top"]
-
+            start = (p[i-1], q[i-1])
+            end = (p[i], q[i])
+            pygame.draw.line(screen, color, start, end, width=4)
 
     # draw enigma components
     for component in [enigma.re, enigma.r1, enigma.r2, enigma.r3, enigma.pb, enigma.kb]:
