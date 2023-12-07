@@ -1,9 +1,11 @@
 import pygame
+
+
 class Rotor:
     def __init__(self, wiring, notch):
         self.left = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         self.right = wiring
-        self.notch = notch #Na podstawie wikipedii
+        self.notch = notch  # Na podstawie wikipedii
 
     def forward(self, signal):
         letter = self.right[signal]
@@ -20,9 +22,8 @@ class Rotor:
         print(self.right)
         print("")
 
-
     def rotate(self, n=1, forward=True):
-        for i in range (n):
+        for i in range(n):
             if forward:
                 self.left = self.left[1:] + self.left[0]
                 self.right = self.right[1:] + self.right[0]
@@ -36,40 +37,39 @@ class Rotor:
 
     def set_ring(self, n):
         # rotate the rotor backward
-        self.rotate(n-1, forward=False)
+        self.rotate(n - 1, forward=False)
 
         # adjust the turnover notch in realtionship to the wiring
         n_notch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".find(self.notch)
         self.notch = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[(n_notch - n) % 26]
 
-    def draw(self, screen, x,y,w,h, font):
+    def draw(self, screen, x, y, w, h, font):
 
-        #rectangle
-        r = pygame.Rect(x,y,w,h)
-        pygame.draw.rect(screen,"white", r, width=2, border_radius=15)
+        # rectangle
+        r = pygame.Rect(x, y, w, h)
+        pygame.draw.rect(screen, "white", r, width=2, border_radius=15)
 
         # letters
         for i in range(26):
 
-            #left hand side
+            # left hand side
             letter = self.left[i]
             letter = font.render(letter, True, "grey")
-            text_box = letter.get_rect(center = (x+w/4,y+ (i+1)*h/27))
+            text_box = letter.get_rect(center=(x + w / 4, y + (i + 1) * h / 27))
 
             # highlight top letter
             if i == 0:
-                pygame.draw.rect(screen, "teal", text_box, border_radius = 5)
+                pygame.draw.rect(screen, "teal", text_box, border_radius=5)
 
             # highlight turnover notch
             if self.left[i] == self.notch:
                 letter = font.render(self.notch, True, "#333333")
-                pygame.draw.rect(screen, "white", text_box, border_radius = 5)
+                pygame.draw.rect(screen, "white", text_box, border_radius=5)
 
             screen.blit(letter, text_box)
 
-
-            #right hand side
+            # right hand side
             letter = self.right[i]
             letter = font.render(letter, True, "grey")
-            text_box = letter.get_rect(center = (x+w*3/4,y+ (i+1)*h/27))
+            text_box = letter.get_rect(center=(x + w * 3 / 4, y + (i + 1) * h / 27))
             screen.blit(letter, text_box)

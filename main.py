@@ -6,10 +6,6 @@ from reflector import Reflector
 from enigma import Enigma
 from draw import draw
 
-#>>>>>>>>>>>> 26:45 <<<<<<<<<<<<<<< Part 3
-
-
-
 # Setup pygame
 pygame.init()
 pygame.font.init()
@@ -25,6 +21,10 @@ HEIGHT = 900
 SCREEN = pygame.display.set_mode((WIDTH,HEIGHT))
 MARGINS = {"top":200, "bottom":200, "left":100, "right":100}
 GAP = 100
+
+INPUT = ""
+OUTPUT = ""
+PATH = []
 
 # historical enigma rotors and reflectors
 I = Rotor("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q")
@@ -49,27 +49,24 @@ ENIGMA.set_rings((1,1,1))
 # set message key
 ENIGMA.set_key("CAT")
 
-
-"""
-
-#encipher a message
-message = "THISCOOLENIGMAMACHINE"
-cipher_text = ""
-for letter in message:
-    cipher_text = cipher_text + ENIGMA.encipher(letter)
-print(cipher_text)
-
-"""
 animating = True
 while animating:
 
     # bg color
     SCREEN.fill("#333333")
 
+    # text input
+    text = BOLD.render(INPUT, True, "white")
+    text_box = text.get_rect(center = (WIDTH/2,MARGINS["top"]/3))
+    SCREEN.blit(text, text_box)
+
+    # text OUTPUT
+    text = MONO.render(OUTPUT, True, "white")
+    text_box = text.get_rect(center = (WIDTH/2, MARGINS["top"]/3+25))
+    SCREEN.blit(text, text_box)
+
     # draw enigma machine
-    draw(ENIGMA, SCREEN, WIDTH, HEIGHT, MARGINS, GAP, BOLD)
-
-
+    draw(ENIGMA,PATH , SCREEN, WIDTH, HEIGHT, MARGINS, GAP, BOLD)
 
     # update screen
     pygame.display.flip()
@@ -82,3 +79,13 @@ while animating:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
                 II.rotate()
+            elif event.key == pygame.K_SPACE:
+                INPUT = INPUT + " "
+                OUTPUT = OUTPUT + " "
+            else:
+                key = event.unicode
+                if key in "abcdefghijklmnopqrstuvwxyz":
+                    letter = key.upper()
+                    INPUT = INPUT + letter
+                    PATH, cipher = ENIGMA.encipher(letter)
+                    OUTPUT = OUTPUT + cipher
